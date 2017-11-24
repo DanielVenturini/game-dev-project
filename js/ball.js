@@ -38,7 +38,7 @@ class Ball extends Phaser.Sprite {
 
         this.game.camera.follow(this)
         this.movePC()
-        //this.moveCel()
+        this.moveCel()
         this.game.physics.arcade.collide(this, this.game.map)
         //this.move2()
     }
@@ -55,16 +55,16 @@ class Ball extends Phaser.Sprite {
                 this.angular = -200
                 this.speedy = this.speed*(-1)
             } else
-            if (this.o.y > this.body.y){
+            if (o.y > this.body.y){
                 this.angular = 200
                 this.speedy = this.speed
             }
 
-            if (this.o.x < this.body.x) {
+            if (o.x < this.body.x) {
                 this.angular = -200
                 this.speedx = this.speed*(-1)
             } else
-            if (this.o.x > this.body.x) {
+            if (o.x > this.body.x) {
                 this.angular = 200
                 this.speedx = this.speed
             }
