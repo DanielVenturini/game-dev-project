@@ -48,7 +48,7 @@ class Ball extends Phaser.Sprite {
         this.speedy = 0
         this.o
 
-        gyro.startTracking(function(this.o) {
+        gyro.startTracking(function(o) {
             // o.x, o.y, o.z for accelerometer
             // o.alpha, o.beta, o.gamma for gyro
         });
