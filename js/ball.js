@@ -10,7 +10,7 @@ class Ball extends Phaser.Sprite {
         this.anchor.setTo(0.5, 0.5)
         this.game = game
 
-        this.speed = 5
+        this.speed = 7
         this.speedx = 0
         this.speedy = 0
         this.angular = 0
@@ -38,7 +38,7 @@ class Ball extends Phaser.Sprite {
 
         this.game.camera.follow(this)
         this.movePC()
-        this.moveCel()
+        //this.moveCel()
         this.game.physics.arcade.collide(this, this.game.map)
         //this.move2()
     }
@@ -51,32 +51,32 @@ class Ball extends Phaser.Sprite {
         gyro.startTracking(function(o) {
             // o.x, o.y, o.z for accelerometer
             // o.alpha, o.beta, o.gamma for gyro
+
+            if (o.y < this.body.y) {   //foi para cima
+                this.angular = -200
+                this.speedy = this.speed*(-1)
+            } else
+            if (o.y > this.body.y){
+                this.angular = 200
+                this.speedy = this.speed
+            }
+    
+            if (o.x < this.body.x) {
+                this.angular = -200
+                this.speedx = this.speed*(-1)
+            } else
+            if (o.x > this.body.x) {
+                this.angular = 200
+                this.speedx = this.speed
+            }
+        
+            this.body.x += this.speedx
+            this.body.y += this.speedy
+            this.body.angularVelocity = this.angular
+            this.angular = 0
+        
+            this.game.world.wrap(this, 0, true);
         });
-
-        if (this.o.y < this.body.y) {   //foi para cima
-        	this.angular = -200
-            this.speedy = this.speed*(-1)
-        } else
-        if (this.o.y > this.body.y){
-        	this.angular = 200
-            this.speedy = this.speed
-		}
-
-        if (this.o.x < this.body.x) {
-        	this.angular = -200
-            this.speedx = this.speed*(-1)
-        } else
-        if (this.o.x > this.body.x) {
-        	this.angular = 200
-            this.speedx = this.speed
-        }
-    
-        this.body.x += this.speedx
-        this.body.y += this.speedy
-        this.body.angularVelocity = this.angular
-        this.angular = 0
-    
-        this.game.world.wrap(this, 0, true);
     }
 
     movePC() {
