@@ -46,36 +46,37 @@ class Ball extends Phaser.Sprite {
     moveCel(){
         this.speedx = 0
         this.speedy = 0
+        this.o
 
-        gyro.startTracking(function(o) {
+        gyro.startTracking(function(this.o) {
             // o.x, o.y, o.z for accelerometer
             // o.alpha, o.beta, o.gamma for gyro
-
-            if (o.y < this.body.y) {   //foi para cima
-                this.angular = -200
-                this.speedy = this.speed*(-1)
-            } else
-            if (o.y > this.body.y){
-                this.angular = 200
-                this.speedy = this.speed
-            }
-
-            if (o.x < this.body.x) {
-                this.angular = -200
-                this.speedx = this.speed*(-1)
-            } else
-            if (o.x > this.body.x) {
-                this.angular = 200
-                this.speedx = this.speed
-            }
-    
-            this.body.x += this.speedx
-            this.body.y += this.speedy
-            this.body.angularVelocity = this.angular
-            this.angular = 0
-    
-            this.game.world.wrap(this, 0, true);
         });
+
+        if (this.o.y < this.body.y) {   //foi para cima
+        	this.angular = -200
+            this.speedy = this.speed*(-1)
+        } else
+        if (this.o.y > this.body.y){
+        	this.angular = 200
+            this.speedy = this.speed
+		}
+
+        if (this.o.x < this.body.x) {
+        	this.angular = -200
+            this.speedx = this.speed*(-1)
+        } else
+        if (this.o.x > this.body.x) {
+        	this.angular = 200
+            this.speedx = this.speed
+        }
+    
+        this.body.x += this.speedx
+        this.body.y += this.speedy
+        this.body.angularVelocity = this.angular
+        this.angular = 0
+    
+        this.game.world.wrap(this, 0, true);
     }
 
     movePC() {
