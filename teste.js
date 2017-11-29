@@ -1,11 +1,14 @@
-window.addEventListener('deviceorientation', brasilvaronil, true);
+window.addEventListener("deviceorientation", brasilvaronil);
 
 function brasilvaronil(event){
+  var directions = document.getElementById("directions");
 
-    if(event.gamma > 0){
-        window.alert('gire para a esquerda!')
-    } else {
-      window.alert('gire para a direita')
-    }
+  if (evt.alpha < 5 || evt.alpha > 355) {
+    directions.innerHTML = "North!";
+  } else if (evt.alpha < 180) {
+    directions.innerHTML = "Turn Left";
+  } else {
+    directions.innerHTML = "Turn Right";
+  }
 
 }
