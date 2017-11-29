@@ -38,7 +38,7 @@ class Ball extends Phaser.Sprite {
 
         this.game.camera.follow(this)
         this.movePC()
-        //this.moveCel()
+        this.moveCel()
         this.game.physics.arcade.collide(this, this.game.map)
         //this.move2()
     }
