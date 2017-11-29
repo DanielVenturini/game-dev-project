@@ -1,3 +1,11 @@
-if (window.DeviceOrientationEvent) {
-  window.alert('brasil mesmo')
+window.addEventListener('deviceorientation', brasilvaronil, false);
+
+function brasilvaronil(event){
+
+    if(event.gamma > 0){
+        window.alert('gire para a esquerda!')
+    } else {
+      window.alert('gire para a direita')
+    }
+
 }
