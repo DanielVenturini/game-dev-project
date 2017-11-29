@@ -1,4 +1,4 @@
-window.addEventListener('deviceorientation', brasilvaronil, false);
+window.addEventListener('deviceorientation', brasilvaronil, true);
 
 function brasilvaronil(event){
 
