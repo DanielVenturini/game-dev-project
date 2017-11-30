@@ -1,14 +1,13 @@
 
 class Player extends Phaser.Sprite {
-    constructor(game, x, y, asset, tint) {
-        super(game, x, y, asset)
+    constructor(game, x, y, asset) {
+        super(game, x, y, asset)   
         this.anchor.setTo(0.5, 0.5)
-        this.tint = tint
+        this.scale.setTo(2, 2)
         this.inputEnabled = true
         this.input.enableDrag(false, true)
+              
     }
 
-    update() {
-        // logica do player
-    }
+
 }
