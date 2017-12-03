@@ -6,7 +6,7 @@ let GAME = null
 class Game extends Phaser.Game {
     constructor () {        
         // Game(width, height, renderer, parent, state, transparent, antialias, physicsConfig)
-        super(1024, 600, Phaser.CANVAS, 'game-container', null, false, false)
+        super(480, 800, Phaser.CANVAS, 'game-container', null, false, false)
 
         // adiciona estados ao jogo
         this.state.add('Play', PlayState, false)
@@ -25,17 +25,17 @@ class Game extends Phaser.Game {
 class GameState extends Phaser.State {
     initFullScreenButtons() {
         this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-        
+
         let fullScreenButton = this.input.keyboard.addKey(Phaser.Keyboard.ONE);
         fullScreenButton.onDown.add(this.toggleFullScreen, this)    
 
         // full screen touch button
-        let fullScreenIcon = this.game.add.sprite(100, 100, 
+        let fullScreenIcon = this.game.add.sprite(this.game.width - 10, this.game.height - 10, 
             'fullscreen-button')
         fullScreenIcon.anchor.setTo(1, 1)
         fullScreenIcon.scale.setTo(0.75, 0.75)
-        fullScreenIcon.inputEnabled = true //clique
-        fullScreenIcon.events.onInputDown.add(this.toggleFullScreen, this) //clique           
+        fullScreenIcon.inputEnabled = true
+        fullScreenIcon.events.onInputDown.add(this.toggleFullScreen, this)            
     }
 
     toggleFullScreen() {
