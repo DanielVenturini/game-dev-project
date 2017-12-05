@@ -1,19 +1,20 @@
 class Ball extends Phaser.Sprite {
-    
+
         constructor(game, x, y, asset) {
             super(game, x, y, asset)
+            this.game.physics.arcade.enable(this)
             this.immovable = true
             this.inputEnabled = true
             this.input.enableDrag(false, true)
-            this.game.physics.arcade.enable(this)
             this.anchor.setTo(0.5, 0.5)
             this.game = game
 
-            this.speed = 7
-            this.max = 50
-            this.speedx = this.body.x
-            this.speedy = this.body.y
+            this.butonDown = false  //algum botao foi clicado
+            this.opc = 'NHM'        //qual botao foi clicado
+
             this.angular = 0
+            this.speed = 10
+            this.body.maxVelocity.set(this.speed*this.speed*3.5)
 
             this.keys = {
                 up: game.input.keyboard.addKey(Phaser.Keyboard.UP),
@@ -36,12 +37,92 @@ class Ball extends Phaser.Sprite {
         }
 
         update() {
-    
+
             this.game.camera.follow(this)
-            //this.movePC()
+            this.movePC()
             //this.moveCel()
             this.game.physics.arcade.collide(this, this.game.map)
             //this.move2()
+        }
+
+        move(){
+
+            switch(this.opc){
+
+                case "UP":
+                    this.body.acceleration.y -= this.speed
+                    this.angular -= this.speed*0.3
+                    //console.log('clicou para cima')
+                break
+
+                case 'DOWN':
+                    this.body.acceleration.y += this.speed
+                    this.angular += this.speed*0.3
+                    //console.log('clicou para baixo')
+                break
+
+                case 'LEFT':
+                    this.body.acceleration.x -= this.speed
+                    this.angular -= this.speed*0.3
+                    //console.log('clicou para esquerda')
+                break
+
+                case 'RIGHT':
+                    this.body.acceleration.x += this.speed
+                    this.angular += this.speed*0.3
+                    //console.log('clicou para direita')
+                break
+
+                default:
+                    console.log('vish sei lah')
+                break
+            }
+
+            if(this.angular > this.body.maxVelocity)
+                this.angular = this.body.maxVelocity
+
+            this.body.angularVelocity = this.angular
+        }
+
+        movePC() {
+
+            if (this.keys.up.isDown) {
+                this.opc = 'UP'
+                this.move()
+                this.butonDown = true
+            } else
+            if (this.keys.down.isDown){
+                this.opc = 'DOWN'
+                this.move()
+                this.butonDown = true
+            }
+
+            if (this.keys.left.isDown) {
+                this.opc = 'LEFT'
+                this.move()
+                this.butonDown = true
+            } else
+            if (this.keys.right.isDown) {
+                this.opc = 'RIGHT'
+                this.move()
+                this.butonDown = true
+            }
+
+            if(this.butonDown == false){
+                this.body.acceleration.set(0)
+
+                if(this.body.angularVelocity > 0){
+                    this.body.angularVelocity -= this.speed
+                } else if(this.body.angularVelocity < 0){
+                    this.body.angularVelocity += this.speed
+                }
+
+            } else {
+                this.butonDown = false
+            }
+
+
+            this.game.world.wrap(this, 0, true);
         }
 
         moveCel(event){
@@ -74,71 +155,4 @@ class Ball extends Phaser.Sprite {
             this.game.world.wrap(this, 0, true)
         }
 
-        move(){
-
-            if(this.speedx != this.body.x){
-                if(this.speedx > this.max)          this.speedx = this.max
-                if(this.speedx < (-1)*this.max)     this.speedx = (-1)*this.max
-            }
-
-            if(this.speedy != this.body.y){
-                if(this.speedy > this.max)          this.speedy = this.max
-                if(this.speedy > (-1)*this.max)     this.speedy = (-1)*this.max
-            }
-
-            this.body.acceleration.x = this.speedx
-            this.body.acceleration.y = this.speedy
-//            this.body.x += this.speedx
-  //          this.body.y += this.speedy
-            this.body.angularVelocity = this.angular
-            this.angular = 0
-
-        }
-    
-        movePC() {
-
-            if (this.keys.up.isDown) {
-                this.angular = -this.speed
-                this.speedy += this.speed*(-1)
-            } else
-            if (this.keys.down.isDown){
-                this.angular = 200
-                this.speedy += this.speed
-            }
-
-            if (this.keys.left.isDown) {
-                this.angular = -200
-                this.speedx += this.speed*(-1)
-            } else
-            if (this.keys.right.isDown) {
-                this.angular = 200
-                this.speedx += this.speed
-            }
-
-            this.move()
-    
-            this.game.world.wrap(this, 0, true);
-        }
-    
-        /*
-        move2(){
-            
-                    if (this.keys.up.isDown) {
-                        this.game.physics.arcade.accelerationFromRotation(this.rotation, 200, this.body.acceleration)
-                    } else {
-                        this.body.acceleration.set(0)
-                    }
-            
-                    if (this.keys.left.isDown) {
-                        this.body.angularVelocity = -200
-                    } else
-                    if (this.keys.right.isDown) {
-                        this.body.angularVelocity = 200
-                    } else {
-                        this.body.angularVelocity = 0
-                    }
-            
-                    this.game.world.wrap(this, 0, true);
-                }
-        */
     }
