@@ -9,11 +9,9 @@ class Ball extends Phaser.Sprite {
             this.anchor.setTo(0.5, 0.5)
             this.game = game
 
-            this.butonDown = false  //algum botao foi clicado
-            this.opc = 'NHM'        //qual botao foi clicado
-
             this.angular = 0
-            this.speed = 10
+            this.speed = 9
+            this.angular = this.speed
             this.body.maxVelocity.set(this.speed*this.speed*3.5)
 
             this.keys = {
@@ -29,23 +27,58 @@ class Ball extends Phaser.Sprite {
         }
 
         handleOrientation(evnt) {
-            var z = evnt.alpha;
-            var y = evnt.beta;
-            var x = evnt.gamma;
-            this.body.acceleration.x += x;
-            this.body.acceleration.y += y;
+            //var z = evnt.alpha
+            //var y = evnt.beta
+            //var x = evnt.gamma
+
+            this.body.velocity.x += evnt.gamma
+            this.body.velocity.y += evnt.beta
+        }
+
+        tocou(ball, star){
+            console.log('totou')
         }
 
         update() {
-
             this.game.camera.follow(this)
-            this.movePC()
+            //this.movePC()
             //this.moveCel()
+            this.movePC()
             this.game.physics.arcade.collide(this, this.game.map)
-            //this.move2()
+            this.game.physics.arcade.collide(this, this.game.stars, this.tocou)
         }
 
-        move(){
+        movePC() {
+            this.click = false
+
+            if(this.keys.left.isDown) {
+                this.click = true
+                this.body.velocity.x -= this.speed
+                this.body.angularVelocity -= this.angular
+            }
+            else if(this.keys.right.isDown) {
+                this.click = true
+                this.body.velocity.x += this.speed
+                this.body.angularVelocity += this.angular
+            }
+
+            if(this.keys.up.isDown) {
+                this.click = true
+                this.body.velocity.y -= this.speed
+                this.body.angularVelocity -= this.angular
+            }
+            else if(this.keys.down.isDown) {
+                this.click = true
+                this.body.velocity.y += this.speed
+                this.body.angularVelocity += this.angular
+            }
+
+            if(this.click == false){
+                this.body.angularVelocity += this.body.angularVelocity*(-0.05)
+            }
+        }
+
+        /*move(){
 
             switch(this.opc){
 
@@ -123,36 +156,5 @@ class Ball extends Phaser.Sprite {
 
 
             this.game.world.wrap(this, 0, true);
-        }
-
-        moveCel(event){
-            this.speedx = 0
-            this.speedy = 0
-
-            if (event.gamma < this.body.y) {   //foi para cima
-                this.angular = -200
-                this.speedy = this.speed*(-1)
-            } else
-            if (event.gamma > this.body.y){
-                this.angular = 200
-                this.speedy = this.speed
-            }
-
-            if (event.beta < this.body.x) {
-                this.angular = -200
-                this.speedx = this.speed*(-1)
-            } else
-            if (event.beta > this.body.x) {
-                this.angular = 200
-                this.speedx = this.speed
-            }
-
-            this.body.x += this.speedx
-            this.body.y += this.speedy
-            this.body.angularVelocity = this.angular
-            this.angular = 0
-
-            this.game.world.wrap(this, 0, true)
-        }
-
-    }
+        }*/
+}

@@ -16,6 +16,8 @@ class PlayState extends GameState {
     create() {
 
         this.map = null
+        this.stars = null
+        this.balls = null
         this.game.speed = 3
 
         this.game.renderer.roundPixels = true
@@ -30,12 +32,14 @@ class PlayState extends GameState {
         this.mapTmx
         this.createMap(this.mapTmx)
 
+        //this.text = this.createHealthText(this.game.width*1/9, 50, 'PONTOS: 0       ESTRELAS: 0')
+        //this.game = this.text
         this.game.map = this.map
+        this.game.stars = this.stars
         //this.ball = new Ball(this.game, this.posx, this.posy, 'ball')
         //this.game.add.existing(this.ball)
 
         // HUD
-        //this.text1 = this.createHealthText(this.game.width*1/9, 50, 'PLAYER A: 5')
 
         // adicionar controles de full screen a tela
         super.initFullScreenButtons()
@@ -54,19 +58,17 @@ class PlayState extends GameState {
         this.game.world.setBounds(0, 0, this.mapTmx.widthInPixels, this.mapTmx.heightInPixels)
 
         this.map = this.game.add.group()
-        this.mapTmx.createFromObjects('mapa1', 6, 'ball', 0, true, false, this.map, Ball)
-        this.mapTmx.createFromObjects('mapa1', 3, 'star', 0, true, false, this.map, Star)
+        this.stars = this.game.add.group()
+        this.balls = this.game.add.group()
+
+        this.mapTmx.createFromObjects('mapa1', 3, 'star', 0, true, false, this.stars, Star)
+        this.mapTmx.createFromObjects('mapa1', 6, 'ball', 0, true, false, this.balls, Ball)
         this.mapTmx.createFromObjects('mapa1', 1, 'wall', 0, true, false, this.map, Block)
         this.mapTmx.createFromObjects('mapa1', 2, 'black', 0, true, false, this.map, Block)
     }
 
-    colidiu(bola, mapTmx){
-        window.alert('brasil')
-    }
-
     update() {
-        //this.camera.follow(this.ball)
-        //this.game.physics.arcade.collide(this.mapTmx.objects[0], this.mapTmx.objects[1], this.colidiu)
+        //TODO all--logical code
     }
 
     updateHud() {

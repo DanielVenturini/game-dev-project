@@ -34,11 +34,21 @@ class Star extends Phaser.TileSprite {
         this.tag = 'star'
         this.autoCull = true
 
+        this.game = game
         this.animations.add('rotate', [0, 1, 2, 3, 4, 5, 6, 7], 10, true)
         this.animations.play('rotate')
     }
 
+    tocou(){
+        console.log('Transladado')
+    }
+
+    updateText(ponts){
+        score.text = 'SCORE ' + (qtd + ponts)
+        qtd += ponts
+    }
+
     update(){
-        //this.game.physics.arcade.overlap(this, this.gamememe.ball, this.getPoints)
+
     }
 }
