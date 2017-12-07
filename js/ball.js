@@ -23,7 +23,7 @@ class Ball extends Phaser.Sprite {
         }
 
         create(){
-            window.addEventListener("deviceorientation",  this.handleOrientation.bind(this), true);
+            window.addEventListener("deviceorientation",  this.handleOrientation.bind(this), true)
         }
 
         handleOrientation(evnt) {
@@ -36,7 +36,7 @@ class Ball extends Phaser.Sprite {
         }
 
         tocou(ball, star){
-            console.log('totou')
+            star.kill()
         }
 
         update() {

@@ -10,7 +10,7 @@ class PlayState extends GameState {
         this.game.load.image('hole', 'assets/hole.png')
         this.game.load.image('wall', 'assets/wall.png')
 
-        this.game.load.tilemap('mapa1', 'assets/mapa1.json', null, Phaser.Tilemap.TILED_JSON)
+        this.game.load.tilemap('mapa', 'assets/mapa1.json', null, Phaser.Tilemap.TILED_JSON)
     }
 
     create() {
@@ -18,6 +18,7 @@ class PlayState extends GameState {
         this.map = null
         this.stars = null
         this.balls = null
+        this.ball = null
         this.game.speed = 3
 
         this.game.renderer.roundPixels = true
@@ -53,16 +54,32 @@ class PlayState extends GameState {
         return text
     }
 
+    createPlayer() {
+        
+        this.ball = this.game.add.sprite(100, 100, 'ball')
+        this.ball.anchor.setTo(0, 0.5)
+
+        this.game.physics.arcade.enable(this.ball)
+        this.ball.body.drag.set(100)
+        this.ball.health = 20
+    }
+
     createMap(mapTmx) {
-        this.mapTmx = this.game.add.tilemap('mapa1')
+        this.mapTmx = this.game.add.tilemap('mapa')
         this.game.world.setBounds(0, 0, this.mapTmx.widthInPixels, this.mapTmx.heightInPixels)
 
         this.map = this.game.add.group()
         this.stars = this.game.add.group()
         this.balls = this.game.add.group()
 
+        //this.ball = this.game.add.sprite(100, 100, 'ball', 0, this.balls)
+        //this.createPlayer()
+
+        this.ball = new Ball(this.game, 105, 105, 'ball')
+        this.game.add.existing(this.ball)
+
         this.mapTmx.createFromObjects('mapa1', 3, 'star', 0, true, false, this.stars, Star)
-        this.mapTmx.createFromObjects('mapa1', 6, 'ball', 0, true, false, this.balls, Ball)
+        //this.mapTmx.createFromObjects('mapa1', 6, 'ball', 0, true, false, this.balls, Ball)
         this.mapTmx.createFromObjects('mapa1', 1, 'wall', 0, true, false, this.map, Block)
         this.mapTmx.createFromObjects('mapa1', 2, 'black', 0, true, false, this.map, Block)
     }
