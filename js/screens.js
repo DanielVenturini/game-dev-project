@@ -75,7 +75,7 @@ class PlayState extends GameState {
         //this.ball = this.game.add.sprite(100, 100, 'ball', 0, this.balls)
         //this.createPlayer()
 
-        this.ball = new Ball(this.game, 105, 105, 'ball')
+        this.ball = new Ball(this.game, 110, 110, 'ball')
         this.game.add.existing(this.ball)
 
         this.mapTmx.createFromObjects('mapa1', 3, 'star', 0, true, false, this.stars, Star)
