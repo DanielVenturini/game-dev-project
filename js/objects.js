@@ -1,16 +1,34 @@
 
 class Hole extends Phaser.Sprite {
     constructor(game, x, y, asset) {
-        super(game, x, y, 84, 84, asset)
+        super(game, x, y, asset)
         this.game.physics.arcade.enable(this)
-        this.body.syncBounds = true
         this.body.immovable = true
+        this.body.syncBounds = true
         this.tag = 'hole'
         this.autoCull = true        //desabilita o objeto quando sair do limite da tela
+
+        //this.body.scale.x *= 2
+        //this.body.scale.y *= 2
+
+        this.game = game
+    }
+
+    canKill(hole, ball){
+
+        var distX = (ball.body.x - hole.body.x)
+        var distY = (ball.body.y - hole.body.y)
+
+        if(distX < 0)   distX *= (-1)
+        if(distY < 0)   distY *= (-1)
+
+        if(distX < 30 && distY < 30){
+            ball.kill()
+        }
     }
 
     update() {
-        // logica do npc
+        this.game.physics.arcade.overlap(this, this.game.ball, this.canKill)
     }
 }
 
@@ -39,16 +57,12 @@ class Star extends Phaser.TileSprite {
         this.animations.play('rotate')
     }
 
-    tocou(){
-        console.log('Transladado')
-    }
-
     updateText(ponts){
         score.text = 'SCORE ' + (qtd + ponts)
         qtd += ponts
     }
 
     update(){
-
+        this.game.physics.arcade.overlap(this, this.game.ball)
     }
 }

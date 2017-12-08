@@ -5,33 +5,34 @@ class PlayState extends GameState {
         this.game.load.image('fullscreen-button', 'assets/fullscreen-button.png')
         this.game.load.spritesheet('star', 'assets/star.png', 62, 62)
         this.game.load.image('background', 'assets/background1.png')
-        this.game.load.image('ball', 'assets/ball_orange.png')
+        this.game.load.image('ball', 'assets/ball_main.png')
         this.game.load.image('black', 'assets/black.png')
         this.game.load.image('hole', 'assets/hole.png')
         this.game.load.image('wall', 'assets/wall.png')
-        
+
         this.game.load.tilemap('mapa', 'assets/mapa1.json', null, Phaser.Tilemap.TILED_JSON)
     }
-    
+
     create() {
 
         this.map = null
         this.stars = null
-        this.balls = null
-        this.ball = null
+        this.holes = null
+
         this.speed = 9
+        this.ball = null
         this.angular = this.speed
 
         this.game.renderer.roundPixels = true
         this.game.physics.startSystem(Phaser.Physics.ARCADE)
-        
-        this.game.add.tileSprite(0, 0, 1980, 1044, 'background')
+
         this.game.world.setBounds(0, 0, 1980, 1044)
-        
+        this.game.add.tileSprite(0, 0, 1980, 1044, 'background')
+
         // mapa com paredes
         this.mapTmx
         this.createMap(this.mapTmx)
-        
+
         //bola
         this.keys
         this.getKey()
@@ -41,8 +42,9 @@ class PlayState extends GameState {
 
         window.addEventListener("deviceorientation",  this.handleOrientation.bind(this), true)
         this.game.map = this.map
+        this.game.ball = this.ball
         this.game.stars = this.stars
-        
+
         super.initFullScreenButtons()
     }
 
@@ -73,7 +75,7 @@ class PlayState extends GameState {
         //this.ball.body.setCircle(this.width/2);
         this.ball.body.drag.set(100)
 
-        //this.ball.body.collideWorldBounds = true
+        this.ball.body.collideWorldBounds = true
         //this.ball.body.bounce.set(0.3, 0.3)
         this.ball.body.maxVelocity = (this.speed*this.speed*3.5)
         this.ball.body.drag.set(100)
@@ -85,24 +87,27 @@ class PlayState extends GameState {
 
         this.map = this.game.add.group()
         this.stars = this.game.add.group()
-        this.balls = this.game.add.group()
-
-        //this.ball = new Ball(this.game, 110, 110, 'ball')
+        this.holes = this.game.add.group()
 
         this.mapTmx.createFromObjects('mapa1', 3, 'star', 0, true, false, this.stars, Star)
-        //this.mapTmx.createFromObjects('mapa1', 6, 'ball', 0, true, false, this.balls, Ball)
         this.mapTmx.createFromObjects('mapa1', 1, 'wall', 0, true, false, this.map, Block)
         this.mapTmx.createFromObjects('mapa1', 2, 'black', 0, true, false, this.map, Block)
+        this.mapTmx.createFromObjects('mapa1', 7, 'hole', 0, true, false, this.holes, Hole)
     }
 
     killStar(ball, star){
         star.kill()
+        console.log('matou a bola')
+    }
+
+    killHole(ball, hole){
+        hole.kill()
+        console.log('matou a bola')
     }
 
     update() {
-        //this.movePC()
+        this.movePC()
         this.game.physics.arcade.collide(this.ball, this.map)
-        this.game.physics.arcade.collide(this.ball, this.stars, this.killStar)
     }
 
     movePC() {
@@ -146,56 +151,6 @@ class PlayState extends GameState {
     //    game.debug.body(player2)
     }
 
-    createMap2() {
-        let mapData = [ "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-                        "X                              X                             X",
-                        "X                              X",
-                        "X                              X",
-                        "X                              X",
-                        "X                              X",
-                        "X          XXXXXXXXXXX         X",
-                        "X          X         X         X",
-                        "X                               ",
-                        "X                               ",
-                        "X                               ",
-                        "X                              X",
-                        "X          X         X         X",
-                        "X          XXXXXXXXXXX         X",
-                        "X                              X",
-                        "X                              X",
-                        "X                              X",
-                        "X                              X",
-                        "X                              X",
-                        "X                              X",
-                        "X                              X",
-                        "X                              X",
-                        "X                              X",
-                        "X                              X",
-                        "X                              X",
-                        "X                              X",
-                        "X                              X",
-                        "X                              X",
-                        "X                              X",
-                        "X                              X",
-                        "X                              X",
-                        "X                              X",
-                        "XXX   XXXXXXXXXXXXXXXXXXXXXXXXXX"]
-
-        this.map = this.game.add.group()
-        for (let row = 0; row < mapData.length; row++) {
-            for (let col = 0; col < mapData[0].length; col++) {
-                if (mapData[row][col] == 'X') {
-                    let block = this.map.create(col*32, row*32, 'wall')
-                    block.scale.setTo(0.5, 0.5)
-                    this.game.physics.arcade.enable(block)
-                    block.body.immovable = true
-                    block.tag = 'wall'
-                    //block.inputEnabled = true
-                    //block.input.enableDrag(false, true)
-                }
-            }
-        }
-    }
 }
 
 window.onload = function() {

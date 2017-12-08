@@ -27,10 +27,6 @@ class Ball extends Phaser.Sprite {
         }
 
         handleOrientation(evnt) {
-            //var z = evnt.alpha
-            //var y = evnt.beta
-            //var x = evnt.gamma
-
             this.body.velocity.x += evnt.gamma
             this.body.velocity.y += evnt.beta
         }
