@@ -9,59 +9,74 @@ class PlayState extends GameState {
         this.game.load.image('black', 'assets/black.png')
         this.game.load.image('hole', 'assets/hole.png')
         this.game.load.image('wall', 'assets/wall.png')
-
+        
         this.game.load.tilemap('mapa', 'assets/mapa1.json', null, Phaser.Tilemap.TILED_JSON)
     }
-
+    
     create() {
 
         this.map = null
         this.stars = null
         this.balls = null
         this.ball = null
-        this.game.speed = 3
+        this.speed = 9
+        this.angular = this.speed
 
         this.game.renderer.roundPixels = true
         this.game.physics.startSystem(Phaser.Physics.ARCADE)
-
-        //let background = this.game.add.tileSprite(0, 0, this.game.width, this.game.height, 'background')
+        
         this.game.add.tileSprite(0, 0, 1980, 1044, 'background')
         this.game.world.setBounds(0, 0, 1980, 1044)
-        //background.autoScroll(-30, 0)
-
+        
         // mapa com paredes
         this.mapTmx
         this.createMap(this.mapTmx)
+        
+        //bola
+        this.keys
+        this.getKey()
+        this.createPlayer()
+        this.game.add.existing(this.ball)
+        this.game.camera.follow(this.ball)
 
-        //this.text = this.createHealthText(this.game.width*1/9, 50, 'PONTOS: 0       ESTRELAS: 0')
-        //this.game = this.text
+        window.addEventListener("deviceorientation",  this.handleOrientation.bind(this), true)
         this.game.map = this.map
         this.game.stars = this.stars
-        //this.ball = new Ball(this.game, this.posx, this.posy, 'ball')
-        //this.game.add.existing(this.ball)
-
-        // HUD
-
-        // adicionar controles de full screen a tela
+        
         super.initFullScreenButtons()
     }
 
-    createHealthText(x, y, string) {
-        let style = {font: 'bold 16px Arial', fill: 'white'}
-        let text = this.game.add.text(x, y, string, style)
-        text.setShadow(3, 3, 'rgba(0, 0, 0, 0.5)', 2)
-        text.anchor.setTo(0.5, 0.5)
-        return text
+    handleOrientation(evnt) {
+        var z = evnt.alpha
+        var y = evnt.beta
+        var x = evnt.gamma
+
+        this.ball.body.velocity.x += x
+        this.ball.body.velocity.y += y
+    }
+
+    getKey(){
+        this.keys = {
+            up: this.game.input.keyboard.addKey(Phaser.Keyboard.UP),
+            down: this.game.input.keyboard.addKey(Phaser.Keyboard.DOWN),
+            left: this.game.input.keyboard.addKey(Phaser.Keyboard.LEFT),
+            right: this.game.input.keyboard.addKey(Phaser.Keyboard.RIGHT)
+        }
     }
 
     createPlayer() {
-        
-        this.ball = this.game.add.sprite(100, 100, 'ball')
-        this.ball.anchor.setTo(0, 0.5)
 
-        this.game.physics.arcade.enable(this.ball)
+        this.ball = this.game.add.sprite(110, 110, 'ball')
+        this.ball.anchor.setTo(0.5, 0.5)
+        //this.ball.scale.setTo(0.02, 0.02)
+        this.game.physics.enable(this.ball)//, Phaser.Physics.ARCADE)
+        //this.ball.body.setCircle(this.width/2);
         this.ball.body.drag.set(100)
-        this.ball.health = 20
+
+        //this.ball.body.collideWorldBounds = true
+        //this.ball.body.bounce.set(0.3, 0.3)
+        this.ball.body.maxVelocity = (this.speed*this.speed*3.5)
+        this.ball.body.drag.set(100)
     }
 
     createMap(mapTmx) {
@@ -72,11 +87,7 @@ class PlayState extends GameState {
         this.stars = this.game.add.group()
         this.balls = this.game.add.group()
 
-        //this.ball = this.game.add.sprite(100, 100, 'ball', 0, this.balls)
-        //this.createPlayer()
-
-        this.ball = new Ball(this.game, 110, 110, 'ball')
-        this.game.add.existing(this.ball)
+        //this.ball = new Ball(this.game, 110, 110, 'ball')
 
         this.mapTmx.createFromObjects('mapa1', 3, 'star', 0, true, false, this.stars, Star)
         //this.mapTmx.createFromObjects('mapa1', 6, 'ball', 0, true, false, this.balls, Ball)
@@ -84,18 +95,54 @@ class PlayState extends GameState {
         this.mapTmx.createFromObjects('mapa1', 2, 'black', 0, true, false, this.map, Block)
     }
 
+    killStar(ball, star){
+        star.kill()
+    }
+
     update() {
-        //TODO all--logical code
+        //this.movePC()
+        this.game.physics.arcade.collide(this.ball, this.map)
+        this.game.physics.arcade.collide(this.ball, this.stars, this.killStar)
+    }
+
+    movePC() {
+        this.click = false
+
+        if(this.keys.left.isDown) {
+            this.click = true
+            this.ball.body.velocity.x -= this.speed
+            this.ball.body.angularVelocity -= this.angular
+        }
+        else if(this.keys.right.isDown) {
+            this.click = true
+            this.ball.body.velocity.x += this.speed
+            this.ball.body.angularVelocity += this.angular
+        }
+
+        if(this.keys.up.isDown) {
+            this.click = true
+            this.ball.body.velocity.y -= this.speed
+            this.ball.body.angularVelocity -= this.angular
+        }
+        else if(this.keys.down.isDown) {
+            this.click = true
+            this.ball.body.velocity.y += this.speed
+            this.ball.body.angularVelocity += this.angular
+        }
+
+        if(this.click == false){
+            this.ball.body.angularVelocity += this.ball.body.angularVelocity*(-0.05)
+        }
     }
 
     updateHud() {
-        this.text1.text = 'PLAYER A: ' + this.player1.health
+        this.text1.text = 'PLAYER A: ' + this.ball.health
         this.text2.text = 'PLAYER B: ' + this.player2.health
     }
 
     render() {
     //    game.debug.body(npc)
-    //    game.debug.body(player1)
+    //    game.debug.body(ball)
     //    game.debug.body(player2)
     }
 
