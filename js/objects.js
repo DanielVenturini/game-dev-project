@@ -8,9 +8,6 @@ class Hole extends Phaser.Sprite {
         this.tag = 'hole'
         this.autoCull = true        //desabilita o objeto quando sair do limite da tela
 
-        //this.body.scale.x *= 2
-        //this.body.scale.y *= 2
-
         this.game = game
     }
 
@@ -22,7 +19,7 @@ class Hole extends Phaser.Sprite {
         if(distX < 0)   distX *= (-1)
         if(distY < 0)   distY *= (-1)
 
-        if(distX < 30 && distY < 30){
+        if(distX < 35 && distY < 35){
             ball.kill()
         }
     }
@@ -51,18 +48,18 @@ class Star extends Phaser.TileSprite {
         this.body.immovable = true
         this.tag = 'star'
         this.autoCull = true
+        this.score = 0
 
         this.game = game
         this.animations.add('rotate', [0, 1, 2, 3, 4, 5, 6, 7], 10, true)
         this.animations.play('rotate')
     }
 
-    updateText(ponts){
-        score.text = 'SCORE ' + (qtd + ponts)
-        qtd += ponts
+    next(star, ball){
+        star.kill()
     }
 
     update(){
-        this.game.physics.arcade.overlap(this, this.game.ball)
+        this.game.physics.arcade.collide(this, this.game.ball, this.next)
     }
 }

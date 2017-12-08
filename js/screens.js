@@ -45,6 +45,9 @@ class PlayState extends GameState {
         this.game.ball = this.ball
         this.game.stars = this.stars
 
+        this.score = 0
+        this.text = this.createHealthText()
+
         super.initFullScreenButtons()
     }
 
@@ -55,6 +58,19 @@ class PlayState extends GameState {
 
         this.ball.body.velocity.x += x
         this.ball.body.velocity.y += y
+    }
+
+    updateText(ball, star){
+        this.score += 1
+        this.text.text = ('ESTRELAS: ' + this.score)
+    }
+
+    createHealthText() {
+        let style = {font: 'bold 56px Arial', fill: 'white'}
+        let text = this.game.add.text(this.game.camera.x+240, this.camera.y+30, "ESTRELAS: 0", style)
+        text.setShadow(3, 3, 'rgba(0, 0, 0, 0.5)', 2)
+        text.anchor.setTo(0.5, 0.5)
+        return text
     }
 
     getKey(){
@@ -105,9 +121,16 @@ class PlayState extends GameState {
         console.log('matou a bola')
     }
 
+    moveText(){
+        this.text.x = this.game.camera.x+240
+        this.text.y = this.camera.y+30
+    }
+
     update() {
         this.movePC()
+        this.moveText()
         this.game.physics.arcade.collide(this.ball, this.map)
+        this.game.physics.arcade.collide(this.ball, this.stars, this.updateText)
     }
 
     movePC() {
@@ -138,11 +161,6 @@ class PlayState extends GameState {
         if(this.click == false){
             this.ball.body.angularVelocity += this.ball.body.angularVelocity*(-0.05)
         }
-    }
-
-    updateHud() {
-        this.text1.text = 'PLAYER A: ' + this.ball.health
-        this.text2.text = 'PLAYER B: ' + this.player2.health
     }
 
     render() {
