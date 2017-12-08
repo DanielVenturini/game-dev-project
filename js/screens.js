@@ -45,8 +45,11 @@ class PlayState extends GameState {
         this.game.ball = this.ball
         this.game.stars = this.stars
 
-        this.score = 0
-        this.text = this.createHealthText()
+        //this.score = 1
+        //this.text = this.createHealthText(this.game.camera.x+240, this.camera.y+30, 'ESTRELAS: 10')
+        this.ball.score = 1
+        this.ball.text = this.createHealthText(this.game.camera.x+240, this.camera.y+30, 'ESTRELAS: 10')
+        //this.text = this.createHealthText(this.score)
 
         super.initFullScreenButtons()
     }
@@ -60,14 +63,9 @@ class PlayState extends GameState {
         this.ball.body.velocity.y += y
     }
 
-    updateText(ball, star){
-        this.score += 1
-        this.text.text = ('ESTRELAS: ' + this.score)
-    }
-
-    createHealthText() {
+    createHealthText(x, y, string) {
         let style = {font: 'bold 56px Arial', fill: 'white'}
-        let text = this.game.add.text(this.game.camera.x+240, this.camera.y+30, "ESTRELAS: 0", style)
+        let text = this.game.add.text(x, y, string, style)
         text.setShadow(3, 3, 'rgba(0, 0, 0, 0.5)', 2)
         text.anchor.setTo(0.5, 0.5)
         return text
@@ -111,9 +109,19 @@ class PlayState extends GameState {
         this.mapTmx.createFromObjects('mapa1', 7, 'hole', 0, true, false, this.holes, Hole)
     }
 
+
+    updateText(){
+        this.score += 1
+        this.text.text = 'PLAYER A: ' + this.score
+    }
+
     killStar(ball, star){
         star.kill()
-        console.log('matou a bola')
+        ball.score += 1
+        ball.text.text = 'ESTRELAS: ' + ball.score
+        //this.score += 1
+        //this.text = this.createHealthText(this.score)
+        //this.text.text = this.updateText()
     }
 
     killHole(ball, hole){
@@ -122,15 +130,15 @@ class PlayState extends GameState {
     }
 
     moveText(){
-        this.text.x = this.game.camera.x+240
-        this.text.y = this.camera.y+30
+        this.ball.text.x = this.game.camera.x+240
+        this.ball.text.y = this.camera.y+30
     }
 
     update() {
         this.movePC()
         this.moveText()
         this.game.physics.arcade.collide(this.ball, this.map)
-        this.game.physics.arcade.collide(this.ball, this.stars, this.updateText)
+        this.game.physics.arcade.collide(this.ball, this.stars, this.killStar)
     }
 
     movePC() {
