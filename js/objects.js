@@ -19,15 +19,17 @@ class Hole extends Phaser.Sprite {
         if(distX < 0)   distX *= (-1)
         if(distY < 0)   distY *= (-1)
 
-        if(distX < 35 && distY < 35){
-            ball.kill()
-        } else {
+        if(hole.key == "nHole"){
+            ball.visible = false
+            ball.level += 1
+            ball.text.text = "Parabens !!!"
+            ball.musicEnd.play()
             return
         }
 
-        if(hole.key == "nHole"){
-            ball.text.text = "Parabens !!!"
-            ball.musicEnd.play()
+        if(distX < 30 && distY < 30){
+            ball.visible = false
+        } else {
             return
         }
 
@@ -73,9 +75,5 @@ class Star extends Phaser.TileSprite {
 
     update(){
         this.game.physics.arcade.collide(this, this.game.ball, this.next)
-
-        if(this.key == "nHole"){
-            this.angle += 5
-        }
     }
 }
