@@ -10,12 +10,12 @@ class PlayState extends GameState {
         this.game.load.image('background2', 'assets/back2.png')
         this.game.load.image('background3', 'assets/back3.png')
         this.game.load.image('nHole', 'assets/nextHole.png')
-        this.game.load.image('click', 'assets/click.png')
         this.game.load.image('black', 'assets/black.png')
         this.game.load.image('pause', 'assets/pause.png')
         this.game.load.image('menu', 'assets/menu.png')
         this.game.load.image('hole', 'assets/hole.png')
         this.game.load.image('wall', 'assets/wall.png')
+        this.game.load.image('brick', 'assets/brick.png')
         this.game.load.image('box', 'assets/box.png')
 
         this.game.load.tilemap('mapA', 'assets/mapa1.json', null, Phaser.Tilemap.TILED_JSON)
@@ -155,9 +155,6 @@ class PlayState extends GameState {
     }
 
     killAll(){
-        /*this.map.forEach(function (c) { c.kill() })
-        this.stars.forEach(function (c) { c.kill() })
-        this.holes.forEach(function (c) { c.kill() })*/
         this.map.killAll()
         this.stars.killAll()
         this.holes.killAll()
@@ -184,8 +181,8 @@ class PlayState extends GameState {
             break
 
             case 3:
-                this.createMap(this.mapTmx, 'mapC', 'another', 'background3')
-                this.changeBall('ball_master', 110, 110)
+                this.createMap(this.mapTmx, 'mapC', 'brick', 'background3')
+                this.changeBall('ball_master', 80, 80)
             break
         }
 
@@ -199,11 +196,14 @@ class PlayState extends GameState {
             this.game.paused = (this.game.paused?false:true)
         } else {
             this.menu.visible = false
+            this.game.paused = false
             this.ball.text.text = "ESTRELAS: 0"
         }
     }
 
     createMenu(){
+        //this.game.paused = true
+        this.ball.body.paused = true
         this.menu = this.game.add.tileSprite(0, 0, 480, 800, 'menu')
         this.pause = this.game.add.tileSprite(0, 0, 40, 40, 'pause')
         this.ball.text = this.createHealthText(this.game.camera.x+240, this.camera.y+30, 'Clique pra jogar')
@@ -216,10 +216,6 @@ class PlayState extends GameState {
         this.pause.input.useHandCursor = true
         this.pause.events.onInputDown.add(this.destroySprite, this)
         this.pause.id = 'pause'
-    }
-
-    changeLevel(){
-        
     }
 
     update() {

@@ -18,7 +18,7 @@ class Hole extends Phaser.Sprite {
 
         if(distX < 0)   distX *= (-1)
         if(distY < 0)   distY *= (-1)
-
+        
         if(hole.key == "nHole"){
             ball.visible = false
             ball.level += 1
@@ -27,13 +27,13 @@ class Hole extends Phaser.Sprite {
             return
         }
 
-        if(distX < 30 && distY < 30){
+        if(distX < 40 && distY < 40){
             ball.visible = false
+            ball.musicHole.play()
         } else {
             return
         }
 
-        ball.musicHole.play()
     }
 
     update() {
