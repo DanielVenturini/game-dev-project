@@ -4,6 +4,7 @@ class PlayState extends GameState {
         this.game.load.image('fullscreen-button', 'assets/fullscreen-button.png')
         this.game.load.spritesheet('star', 'assets/star.png', 62, 62)
         this.game.load.image('ball_master', 'assets/ball_master.png')
+        this.game.load.image('small_ball', 'assets/ball_small.png')
         this.game.load.image('ball_blue', 'assets/ball_blue.png')
         this.game.load.image('ball_main', 'assets/ball_main.png')
         this.game.load.image('background1', 'assets/back1.png')
@@ -182,7 +183,7 @@ class PlayState extends GameState {
 
             case 3:
                 this.createMap(this.mapTmx, 'mapC', 'brick', 'background3')
-                this.changeBall('ball_master', 80, 80)
+                this.changeBall('small_ball', 80, 80)
             break
         }
 
