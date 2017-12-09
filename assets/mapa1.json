@@ -484,6 +484,18 @@
                  "width":64,
                  "x":64,
                  "y":512
+                }, 
+                {
+                 "gid":8,
+                 "height":64,
+                 "id":93,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":64,
+                 "x":768,
+                 "y":128
                 }],
          "offsetx":4,
          "offsety":16,
@@ -493,7 +505,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":93,
+ "nextobjectid":94,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.0.3",
