@@ -153,6 +153,7 @@ class PlayState extends GameState {
         this.ball.text.text = ''
         this.ball.visible = true
         this.ball.loadTexture(sprite, 0)
+        this.ball.score = 0
     }
 
     killAll(){
@@ -183,7 +184,7 @@ class PlayState extends GameState {
 
             case 3:
                 this.createMap(this.mapTmx, 'mapC', 'brick', 'background3')
-                this.changeBall('small_ball', 80, 80)
+                this.changeBall('ball_master', 80, 80)
             break
         }
 
@@ -196,7 +197,7 @@ class PlayState extends GameState {
         if(sprite.id != null){
             this.game.paused = (this.game.paused?false:true)
         } else {
-            this.menu.visible = false
+            this.menu.destroy()
             this.game.paused = false
             this.ball.text.text = "ESTRELAS: 0"
         }
@@ -226,8 +227,8 @@ class PlayState extends GameState {
         this.game.physics.arcade.collide(this.ball, this.stars, this.killStar)
 
         if(!this.ball.visible){
-            this.menu = null
-            this.pause = null
+            this.menu.kill()
+            this.pause.kill()
             this.rebuild()
         }
     }
