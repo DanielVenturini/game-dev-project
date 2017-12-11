@@ -23,7 +23,6 @@ class Hole extends Phaser.Sprite {
             ball.visible = false
             ball.level += 1
             ball.text.text = "Parabens !!!"
-            ball.musicEnd.play()
             return
         }
 
@@ -34,6 +33,10 @@ class Hole extends Phaser.Sprite {
             return
         }
 
+    }
+
+    restartMusic(music){
+        ball.music.play()
     }
 
     update() {

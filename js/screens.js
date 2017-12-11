@@ -3,29 +3,36 @@ class PlayState extends GameState {
     preload() {
         this.game.load.image('fullscreen-button', 'assets/fullscreen-button.png')
         this.game.load.spritesheet('star', 'assets/star.png', 62, 62)
-        this.game.load.image('ball_master', 'assets/ball_master.png')
-        this.game.load.image('small_ball', 'assets/ball_small.png')
-        this.game.load.image('ball_blue', 'assets/ball_blue.png')
-        this.game.load.image('ball_main', 'assets/ball_main.png')
-        this.game.load.image('background1', 'assets/back1.png')
-        this.game.load.image('background2', 'assets/back2.png')
-        this.game.load.image('background3', 'assets/back3.png')
+        this.game.load.image('ball1', 'assets/ball1.png')
+        this.game.load.image('ball2', 'assets/ball2.png')
+        this.game.load.image('ball3', 'assets/ball3.png')
+        this.game.load.image('ball4', 'assets/ball4.png')
+        this.game.load.image('back1', 'assets/back1.png')
+        this.game.load.image('back2', 'assets/back2.png')
+        this.game.load.image('back3', 'assets/back3.png')
+        this.game.load.image('back4', 'assets/back4.png')
         this.game.load.image('nHole', 'assets/nextHole.png')
         this.game.load.image('black', 'assets/black.png')
         this.game.load.image('pause', 'assets/pause.png')
         this.game.load.image('menu', 'assets/menu.png')
         this.game.load.image('hole', 'assets/hole.png')
-        this.game.load.image('wall', 'assets/wall.png')
-        this.game.load.image('brick', 'assets/brick.png')
-        this.game.load.image('box', 'assets/box.png')
+        this.game.load.image('block1', 'assets/block1.png')
+        this.game.load.image('block2', 'assets/block2.png')
+        this.game.load.image('block3', 'assets/block3.png')
+        this.game.load.image('block4', 'assets/block4.png')
 
         this.game.load.tilemap('mapA', 'assets/mapa1.json', null, Phaser.Tilemap.TILED_JSON)
         this.game.load.tilemap('mapB', 'assets/mapa2.json', null, Phaser.Tilemap.TILED_JSON)
         this.game.load.tilemap('mapC', 'assets/mapa3.json', null, Phaser.Tilemap.TILED_JSON)
+        this.game.load.tilemap('mapD', 'assets/mapa4.json', null, Phaser.Tilemap.TILED_JSON)
 
         this.game.load.audio('end', ['audio/end.mp3', 'audio/end.ogg'])
         this.game.load.audio('hole', ['audio/hole.mp3', 'audio/hole.ogg'])
         this.game.load.audio('star', ['audio/star.mp3', 'audio/star.ogg'])
+        this.game.load.audio('music1', ['audio/music1.mp3', 'audio/music1.ogg'])
+        this.game.load.audio('music2', ['audio/music2.mp3', 'audio/music2.ogg'])
+        this.game.load.audio('music3', ['audio/music3.mp3', 'audio/music3.ogg'])
+        this.game.load.audio('music4', ['audio/music4.mp3', 'audio/music4.ogg'])
     }
 
     create() {
@@ -41,7 +48,7 @@ class PlayState extends GameState {
         this.pause
         this.menu
 
-        this.background = this.game.add.tileSprite(0, 0, 1980, 1044, 'background1')
+        this.background = this.game.add.tileSprite(0, 0, 1980, 1044, 'back1')
 
         this.game.renderer.roundPixels = true
         this.game.world.setBounds(0, 0, 1980, 1044)
@@ -49,17 +56,19 @@ class PlayState extends GameState {
 
         //map
         this.mapTmx
-        this.createMap(this.mapTmx, 'mapA', 'wall', 'background1')
+        this.createMap(this.mapTmx, 'mapA', 'block1', 'back1')
 
         //anothers config
         this.keys
         this.getKey()
-        this.createPlayer('ball_main', 110, 110)
+        this.createPlayer('ball1', 110, 110)
         this.game.add.existing(this.ball)
         this.game.camera.follow(this.ball)
-        
+
         this.ball.level = 1
         this.game.actualLevel = 1
+        this.game.points = 0
+        this.game.die = 0
 
         //add in game
         window.addEventListener("deviceorientation",  this.handleOrientation.bind(this), true)
@@ -67,8 +76,15 @@ class PlayState extends GameState {
         this.game.ball = this.ball
         this.game.stars = this.stars
 
+        this.ball.music = this.game.add.audio('music1')
+        this.ball.music.onStop.add(this.restartMusic, this.ball.music)
+
         this.createMenu()
         super.initFullScreenButtons()
+    }
+
+    restartMusic(music){
+        music.play()
     }
 
     handleOrientation(evnt) {
@@ -167,27 +183,53 @@ class PlayState extends GameState {
         this.mapTmx = null
     }
 
+    updaterMusics(){
+        if(! (this.ball.level == this.game.actualLevel) ){
+            this.ball.musicEnd.play()
+            this.game.actualLevel += 1
+        }
+
+        this.ball.music.destroy()
+    }
+
     rebuild(){
+        this.updaterMusics(this.ball.level)
         var level = this.ball.level
+        this.game.points += this.ball.score
         this.killAll()
 
         switch(level){
             case 1:
-                this.createMap(this.mapTmx, 'mapA', 'wall', 'background1')
-                this.changeBall('ball_main', 110, 110)
+                this.ball.music = this.game.add.audio('music1')
+                this.createMap(this.mapTmx, 'mapA', 'block1', 'back1')
+                this.changeBall('ball1', 110, 110)
             break
 
             case 2:
-                this.createMap(this.mapTmx, 'mapB', 'box', 'background2')
-                this.changeBall('ball_blue', 110, 110)
+                this.ball.music = this.game.add.audio('music2')
+                this.createMap(this.mapTmx, 'mapB', 'block2', 'back2')
+                this.changeBall('ball2', 110, 110)
             break
 
             case 3:
-                this.createMap(this.mapTmx, 'mapC', 'brick', 'background3')
-                this.changeBall('ball_master', 80, 80)
+                this.ball.music = this.game.add.audio('music3')
+                this.createMap(this.mapTmx, 'mapC', 'block3', 'back3')
+                this.changeBall('ball3', 80, 80)
+            break
+
+            case 4:
+                this.ball.music = this.game.add.audio('music4')
+                this.createMap(this.mapTmx, 'mapD', 'block4', 'back4')
+                this.changeBall('ball4', 80, 80)
+            break
+
+            case 5:
+                this.createMap(this.mapTmx, 'mapD', 'block4', 'back4')
+                this.changeBall('ball4', 80, 80)
             break
         }
 
+        this.ball.music.onStop.add(this.restartMusic, this.music)
         this.game.add.existing(this.ball)
         this.game.camera.follow(this.ball)
         this.createMenu()
@@ -200,6 +242,7 @@ class PlayState extends GameState {
             this.menu.destroy()
             this.game.paused = false
             this.ball.text.text = "ESTRELAS: 0"
+            this.ball.music.play()
         }
     }
 
