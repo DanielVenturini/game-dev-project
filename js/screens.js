@@ -75,6 +75,8 @@ class PlayState extends GameState {
         this.game.points = 0
         this.ball.angular = 8
         this.game.actualLevel = 1
+        this.game.text1 = this.createHealthText(this.game.camera.x+240, this.game.camera.y+360, '')
+        this.game.text2 = this.createHealthText(this.game.camera.x+240, this.game.camera.y+420, '')
 
         //add in game
         window.addEventListener("deviceorientation",  this.handleOrientation.bind(this), true)
@@ -95,7 +97,7 @@ class PlayState extends GameState {
 
     handleOrientation(evnt) {
 
-        if(this.menu != null){
+        if(this.menu.alive){
             return
         }
 
@@ -203,6 +205,8 @@ class PlayState extends GameState {
         if(! (this.ball.level == this.game.actualLevel) ){
             this.ball.musicEnd.play()
             this.game.actualLevel += 1
+        } else {
+            this.game.die += 1
         }
 
         this.ball.music.destroy()
@@ -240,8 +244,8 @@ class PlayState extends GameState {
             break
 
             case 5:
-                this.createMap(this.mapTmx, 'mapD', 'block4', 'back4')
-                this.changeBall('ball4', 40, 5)
+                this.game.text1.text = 'PARABENS!'
+                this.game.text2.text = 'PONTOS: ' + (this.game.score/ this.game.die)
             break
         }
 
@@ -259,6 +263,8 @@ class PlayState extends GameState {
             this.game.paused = false
             this.ball.text.text = "ESTRELAS: 0"
             this.ball.music.play()
+            this.game.text1.text = ''
+            this.game.text2.text = ''
         }
     }
 
