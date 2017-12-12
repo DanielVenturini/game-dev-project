@@ -2,8 +2,8 @@ class PlayState extends GameState {
 
     preload() {
         this.game.load.image('fullscreen-button', 'assets/fullscreen-button.png')
-        //this.game.load.image('block4street', 'assets/block4.png')
         this.game.load.spritesheet('star', 'assets/star.png', 62, 62)
+        this.game.load.image('block4-1', 'assets/block4-1.png')
         this.game.load.image('nHole', 'assets/nextHole.png')
         this.game.load.image('block1', 'assets/block1.png')
         this.game.load.image('block2', 'assets/block2.png')
@@ -40,16 +40,15 @@ class PlayState extends GameState {
 
         //groups
         this.map = null
+        this.lava = null
         this.stars = null
         this.holes = null
-        this.lava = null
+        this.water = null
         this.street = null
 
-        this.speed = 8
+        this.menu = null
         this.ball = null
-        this.angular = this.speed
-        this.pause
-        this.menu
+        this.pause = null
 
         this.background = this.game.add.tileSprite(0, 0, 1980, 1044, 'back1')
 
@@ -60,18 +59,22 @@ class PlayState extends GameState {
         //map
         this.mapTmx
         this.createMap(this.mapTmx, 'mapA', 'block1', 'back1')
+        //this.createMap(this.mapTmx, 'mapD', 'block4', 'back4')
 
         //anothers config
         this.keys
         this.getKey()
         this.createPlayer('ball1', 110, 110)
+        //this.createPlayer('ball4', 110, 110)
         this.game.add.existing(this.ball)
         this.game.camera.follow(this.ball)
 
-        this.ball.level = 3
-        this.game.actualLevel = 3
-        this.game.points = 0
         this.game.die = 0
+        this.ball.level = 1
+        this.ball.speed = 8
+        this.game.points = 0
+        this.ball.angular = 8
+        this.game.actualLevel = 1
 
         //add in game
         window.addEventListener("deviceorientation",  this.handleOrientation.bind(this), true)
@@ -96,8 +99,8 @@ class PlayState extends GameState {
             return
         }
 
-        var z = evnt.alpha
         var y = evnt.beta
+        var z = evnt.alpha
         var x = evnt.gamma
 
         this.ball.body.velocity.x += x
@@ -125,17 +128,17 @@ class PlayState extends GameState {
         this.ball = this.game.add.sprite(x, y, key)
         this.game.physics.enable(this.ball)
 
-        this.ball.body.maxVelocity = (this.speed*this.speed*2)
-        this.ball.body.collideWorldBounds = true
+        this.ball.body.drag.set(100)
+        this.ball.body.drag.set(100)
         this.ball.anchor.setTo(0.5, 0.5)
-        this.ball.body.drag.set(100)
-        this.ball.body.drag.set(100)
+        this.ball.body.maxVelocity = (8*6)
+        this.ball.body.collideWorldBounds = true
 
         this.ball.score = 0
 
+        this.ball.musicEnd = this.game.add.audio('end')
         this.ball.musicStar = this.game.add.audio('star')
         this.ball.musicHole = this.game.add.audio('hole')
-        this.ball.musicEnd = this.game.add.audio('end')
     }
 
     createMap(mapTmx, mapNB, object, background) {
@@ -146,52 +149,53 @@ class PlayState extends GameState {
         this.map = this.game.add.group()
         this.stars = this.game.add.group()
         this.holes = this.game.add.group()
+        this.water = this.game.add.group()
         this.lava = this.game.add.group()
-        this.street = this.game.add.group()
 
         this.mapTmx.createFromObjects('mapa1', 1, object, 0, true, false, this.map, Block)
         this.mapTmx.createFromObjects('mapa1', 2, 'black', 0, true, false, this.map, Block)
         this.mapTmx.createFromObjects('mapa1', 7, 'hole', 0, true, false, this.holes, Hole)
         this.mapTmx.createFromObjects('mapa1', 3, 'star', 0, true, false, this.stars, Star)
         this.mapTmx.createFromObjects('mapa1', 8, 'nHole', 0, true, false, this.holes, Hole)
-        this.mapTmx.createFromObjects('mapa1', 9, 'block4', 0, true, false, this.lava, Block)
+        this.mapTmx.createFromObjects('mapa1', 9, 'block4', 0, true, false, this.water, Block)
+        this.mapTmx.createFromObjects('mapa1', 10, 'block4-1', 0, true, false, this.lava, Block)
     }
 
     killStar(ball, star){
         star.kill()
         ball.score += 1
-        ball.text.text = 'ESTRELAS: ' + ball.score
         ball.musicStar.play()
+        ball.text.text = 'ESTRELAS: ' + ball.score
     }
 
     moveText(){
-        this.ball.text.x = this.game.camera.x+240
         this.ball.text.y = this.camera.y+30
+        this.ball.text.x = this.game.camera.x+240
 
-        this.pause.x = this.game.camera.x+10
         this.pause.y = this.game.camera.y+5
+        this.pause.x = this.game.camera.x+10
     }
 
     changeBall(sprite, x, y){
         this.ball.body.x = x
         this.ball.body.y = y
 
+        this.ball.score = 0
         this.ball.text.text = ''
         this.ball.visible = true
         this.ball.loadTexture(sprite, 0)
-        this.ball.score = 0
     }
 
     killAll(){
         this.map.killAll()
         this.stars.killAll()
         this.holes.killAll()
-        this.lava.killAll()
+        this.water.killAll()
 
         this.map = null
         this.stars = null
         this.holes = null
-        this.lava = null
+        this.water = null
         this.mapTmx = null
     }
 
@@ -232,7 +236,7 @@ class PlayState extends GameState {
             case 4:
                 this.ball.music = this.game.add.audio('music4')
                 this.createMap(this.mapTmx, 'mapD', 'block4', 'back4')
-                this.changeBall('ball4', 80, 40)
+                this.changeBall('ball4', 40, 20)
             break
 
             case 5:
@@ -241,7 +245,7 @@ class PlayState extends GameState {
             break
         }
 
-        this.ball.music.onStop.add(this.restartMusic, this.music)
+        this.ball.music.onStop.add(this.restartMusic, this.ball.music)
         this.game.add.existing(this.ball)
         this.game.camera.follow(this.ball)
         this.createMenu()
@@ -268,32 +272,34 @@ class PlayState extends GameState {
         this.menu.input.useHandCursor = true
         this.menu.events.onInputDown.add(this.destroySprite, this)
 
+        this.pause.id = 'pause'
         this.pause.inputEnabled = true
         this.pause.input.useHandCursor = true
         this.pause.events.onInputDown.add(this.destroySprite, this)
-        this.pause.id = 'pause'
     }
 
     canDie(ball, lava){
 
         var distX = (ball.body.x - lava.body.x)
         var distY = (ball.body.y - lava.body.y)
+
         if(distX < 0)   distX *= (-1)
         if(distY < 0)   distY *= (-1)
-        
-        if(distX < 20 || distY < 20){
-            console.log('tocou amis uma vez X ' + distX + ' Y ' + distY)
+
+        if(distX < 10 || distY < 10){
             ball.visible = false
             ball.musicHole.play()
-        }
+        }    
     }
 
     update() {
+
         this.movePC()
         this.moveText()
         this.game.physics.arcade.collide(this.ball, this.map)
+        this.game.physics.arcade.collide(this.ball, this.water)
+        this.game.physics.arcade.overlap(this.ball, this.stars, this.killStar)
         this.game.physics.arcade.overlap(this.ball, this.lava, this.canDie)
-        this.game.physics.arcade.collide(this.ball, this.stars, this.killStar)
 
         if(!this.ball.visible){
             this.ball.body.velocity.x = 0
@@ -314,24 +320,24 @@ class PlayState extends GameState {
 
         if(this.keys.left.isDown) {
             this.click = true
-            this.ball.body.velocity.x -= this.speed
-            this.ball.body.angularVelocity -= this.angular
+            this.ball.body.velocity.x -= this.ball.speed
+            this.ball.body.angularVelocity -= this.ball.angular
         }
         else if(this.keys.right.isDown) {
             this.click = true
-            this.ball.body.velocity.x += this.speed
-            this.ball.body.angularVelocity += this.angular
+            this.ball.body.velocity.x += this.ball.speed
+            this.ball.body.angularVelocity += this.ball.angular
         }
 
         if(this.keys.up.isDown) {
             this.click = true
-            this.ball.body.velocity.y -= this.speed
-            this.ball.body.angularVelocity -= this.angular
+            this.ball.body.velocity.y -= this.ball.speed
+            this.ball.body.angularVelocity -= this.ball.angular
         }
         else if(this.keys.down.isDown) {
             this.click = true
-            this.ball.body.velocity.y += this.speed
-            this.ball.body.angularVelocity += this.angular
+            this.ball.body.velocity.y += this.ball.speed
+            this.ball.body.angularVelocity += this.ball.angular
         }
 
         if(this.click == false){
