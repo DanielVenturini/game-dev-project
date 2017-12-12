@@ -54,6 +54,60 @@ class Block extends Phaser.TileSprite {
     }
 }
 
+class Diminutive extends Phaser.TileSprite {
+    constructor(game, x, y, asset) {
+        super(game, x, y, 32, 32, asset)
+        this.game.physics.arcade.enable(this)
+        this.body.syncBounds = true
+        this.body.immovable = true
+        this.tag = 'diminutive'
+        this.autoCull = true
+
+        this.game = game
+    }
+
+    diminutive(sprite, ball){
+        ball.scale.setTo(0.5, 0.5)
+        sprite.kill()
+    }
+
+    update(){
+        this.game.physics.arcade.collide(this, this.game.ball, this.diminutive)
+    }
+}
+
+class AllKill extends Phaser.TileSprite {
+    constructor(game, x, y, asset) {
+        super(game, x, y, 32, 32, asset)
+        this.game.physics.arcade.enable(this)
+        this.body.syncBounds = true
+        this.body.immovable = true
+        this.tag = 'allkill'
+        this.autoCull = true
+
+        this.game = game
+    }
+
+    allkill(sprite, ball){
+        //iterando no grupo de buracos
+        for (var i = 0, len = sprite.game.holes.length; i < len; i ++) {
+            var hole = sprite.game.holes.getAt(i)
+            if(hole.key == 'nHole'){
+                continue
+            }
+
+            hole.kill()
+        }
+
+        ball.allkill.play()
+        sprite.kill()
+    }
+
+    update(){
+        this.game.physics.arcade.collide(this, this.game.ball, this.allkill)
+    }
+}
+
 class Star extends Phaser.TileSprite {
     constructor(game, x, y, asset) {
         super(game, x, y, 32, 32, asset)

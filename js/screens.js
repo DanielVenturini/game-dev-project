@@ -3,7 +3,9 @@ class PlayState extends GameState {
     preload() {
         this.game.load.image('fullscreen-button', 'assets/fullscreen-button.png')
         this.game.load.spritesheet('star', 'assets/star.png', 62, 62)
+        this.game.load.image('diminutive', 'assets/diminutive.png')
         this.game.load.image('block4-1', 'assets/block4-1.png')
+        this.game.load.image('allkill', 'assets/allkill.png')
         this.game.load.image('nHole', 'assets/nextHole.png')
         this.game.load.image('block1', 'assets/block1.png')
         this.game.load.image('block2', 'assets/block2.png')
@@ -21,7 +23,7 @@ class PlayState extends GameState {
         this.game.load.image('pause', 'assets/pause.png')
         this.game.load.image('menu', 'assets/menu.png')
         this.game.load.image('hole', 'assets/hole.png')
-
+        
         this.game.load.tilemap('mapA', 'assets/mapa1.json', null, Phaser.Tilemap.TILED_JSON)
         this.game.load.tilemap('mapB', 'assets/mapa2.json', null, Phaser.Tilemap.TILED_JSON)
         this.game.load.tilemap('mapC', 'assets/mapa3.json', null, Phaser.Tilemap.TILED_JSON)
@@ -34,6 +36,7 @@ class PlayState extends GameState {
         this.game.load.audio('music2', ['audio/music2.mp3', 'audio/music2.ogg'])
         this.game.load.audio('music3', ['audio/music3.mp3', 'audio/music3.ogg'])
         this.game.load.audio('music4', ['audio/music4.mp3', 'audio/music4.ogg'])
+        this.game.load.audio('allkill', ['audio/allkill.mp3', 'audio/allkill.ogg'])
     }
 
     create() {
@@ -45,6 +48,7 @@ class PlayState extends GameState {
         this.holes = null
         this.water = null
         this.street = null
+        this.diminutive = null
 
         this.menu = null
         this.ball = null
@@ -83,6 +87,7 @@ class PlayState extends GameState {
         this.game.map = this.map
         this.game.ball = this.ball
         this.game.stars = this.stars
+        this.game.holes = this.holes
 
         this.ball.music = this.game.add.audio('music1')
         this.ball.music.onStop.add(this.restartMusic, this.ball.music)
@@ -139,8 +144,9 @@ class PlayState extends GameState {
         this.ball.score = 0
 
         this.ball.musicEnd = this.game.add.audio('end')
-        this.ball.musicStar = this.game.add.audio('star')
         this.ball.musicHole = this.game.add.audio('hole')
+        this.ball.musicStar = this.game.add.audio('star')
+        this.ball.allkill = this.game.add.audio('allkill')
     }
 
     createMap(mapTmx, mapNB, object, background) {
@@ -149,10 +155,11 @@ class PlayState extends GameState {
         this.game.world.setBounds(0, 0, this.mapTmx.widthInPixels, this.mapTmx.heightInPixels)
 
         this.map = this.game.add.group()
+        this.lava = this.game.add.group()
         this.stars = this.game.add.group()
         this.holes = this.game.add.group()
         this.water = this.game.add.group()
-        this.lava = this.game.add.group()
+        this.diminutive = this.game.add.group()
 
         this.mapTmx.createFromObjects('mapa1', 1, object, 0, true, false, this.map, Block)
         this.mapTmx.createFromObjects('mapa1', 2, 'black', 0, true, false, this.map, Block)
@@ -161,6 +168,8 @@ class PlayState extends GameState {
         this.mapTmx.createFromObjects('mapa1', 8, 'nHole', 0, true, false, this.holes, Hole)
         this.mapTmx.createFromObjects('mapa1', 9, 'block4', 0, true, false, this.water, Block)
         this.mapTmx.createFromObjects('mapa1', 10, 'block4-1', 0, true, false, this.lava, Block)
+        this.mapTmx.createFromObjects('mapa1', 5, 'diminutive', 0, true, false, this.diminutive, Diminutive)
+        this.mapTmx.createFromObjects('mapa1', 6, 'allkill', 0, true, false, this.diminutive, AllKill)
     }
 
     killStar(ball, star){
@@ -185,6 +194,7 @@ class PlayState extends GameState {
         this.ball.score = 0
         this.ball.text.text = ''
         this.ball.visible = true
+        this.ball.scale.setTo(1, 1)
         this.ball.loadTexture(sprite, 0)
     }
 
@@ -193,6 +203,7 @@ class PlayState extends GameState {
         this.stars.killAll()
         this.holes.killAll()
         this.water.killAll()
+        this.diminutive.killAll()
 
         this.map = null
         this.stars = null
@@ -205,6 +216,7 @@ class PlayState extends GameState {
         if(! (this.ball.level == this.game.actualLevel) ){
             this.ball.musicEnd.play()
             this.game.actualLevel += 1
+            this.game.points += this.ball.score
         } else {
             this.game.die += 1
         }
@@ -215,7 +227,6 @@ class PlayState extends GameState {
     rebuild(){
         this.updaterMusics()
         var level = this.ball.level
-        this.game.points += this.ball.score
         this.killAll()
 
         switch(level){
@@ -244,8 +255,10 @@ class PlayState extends GameState {
             break
 
             case 5:
-                this.game.text1.text = 'PARABENS!'
-                this.game.text2.text = 'PONTOS: ' + (this.game.score/ this.game.die)
+                this.ball.level = 1
+                this.ball.music = this.game.add.audio()
+                this.createMap(this.mapTmx, 'mapA', 'block1', 'back1')
+                this.changeBall('ball1', 110, 110)
             break
         }
 
@@ -282,6 +295,13 @@ class PlayState extends GameState {
         this.pause.inputEnabled = true
         this.pause.input.useHandCursor = true
         this.pause.events.onInputDown.add(this.destroySprite, this)
+
+        console.log('level: ' + this.game.actualLevel)
+        if(this.game.actualLevel == 5){
+            this.game.text1.text = 'PARABENS!'
+            this.game.text2.text = 'PONTOS: ' + (this.game.score/this.game.die)
+            this.game.actualLevel = 1
+        }
     }
 
     canDie(ball, lava){
