@@ -2,7 +2,13 @@ class PlayState extends GameState {
 
     preload() {
         this.game.load.image('fullscreen-button', 'assets/fullscreen-button.png')
+        //this.game.load.image('block4street', 'assets/block4.png')
         this.game.load.spritesheet('star', 'assets/star.png', 62, 62)
+        this.game.load.image('nHole', 'assets/nextHole.png')
+        this.game.load.image('block1', 'assets/block1.png')
+        this.game.load.image('block2', 'assets/block2.png')
+        this.game.load.image('block3', 'assets/block3.png')
+        this.game.load.image('block4', 'assets/block4.png')
         this.game.load.image('ball1', 'assets/ball1.png')
         this.game.load.image('ball2', 'assets/ball2.png')
         this.game.load.image('ball3', 'assets/ball3.png')
@@ -11,15 +17,10 @@ class PlayState extends GameState {
         this.game.load.image('back2', 'assets/back2.png')
         this.game.load.image('back3', 'assets/back3.png')
         this.game.load.image('back4', 'assets/back4.png')
-        this.game.load.image('nHole', 'assets/nextHole.png')
         this.game.load.image('black', 'assets/black.png')
         this.game.load.image('pause', 'assets/pause.png')
         this.game.load.image('menu', 'assets/menu.png')
         this.game.load.image('hole', 'assets/hole.png')
-        this.game.load.image('block1', 'assets/block1.png')
-        this.game.load.image('block2', 'assets/block2.png')
-        this.game.load.image('block3', 'assets/block3.png')
-        this.game.load.image('block4', 'assets/block4.png')
 
         this.game.load.tilemap('mapA', 'assets/mapa1.json', null, Phaser.Tilemap.TILED_JSON)
         this.game.load.tilemap('mapB', 'assets/mapa2.json', null, Phaser.Tilemap.TILED_JSON)
@@ -41,8 +42,10 @@ class PlayState extends GameState {
         this.map = null
         this.stars = null
         this.holes = null
+        this.lava = null
+        this.street = null
 
-        this.speed = 9
+        this.speed = 8
         this.ball = null
         this.angular = this.speed
         this.pause
@@ -65,8 +68,8 @@ class PlayState extends GameState {
         this.game.add.existing(this.ball)
         this.game.camera.follow(this.ball)
 
-        this.ball.level = 1
-        this.game.actualLevel = 1
+        this.ball.level = 3
+        this.game.actualLevel = 3
         this.game.points = 0
         this.game.die = 0
 
@@ -88,6 +91,11 @@ class PlayState extends GameState {
     }
 
     handleOrientation(evnt) {
+
+        if(this.menu != null){
+            return
+        }
+
         var z = evnt.alpha
         var y = evnt.beta
         var x = evnt.gamma
@@ -116,8 +124,8 @@ class PlayState extends GameState {
     createPlayer(key, x, y) {
         this.ball = this.game.add.sprite(x, y, key)
         this.game.physics.enable(this.ball)
-    
-        this.ball.body.maxVelocity = (this.speed*this.speed*3.5)
+
+        this.ball.body.maxVelocity = (this.speed*this.speed*2)
         this.ball.body.collideWorldBounds = true
         this.ball.anchor.setTo(0.5, 0.5)
         this.ball.body.drag.set(100)
@@ -138,13 +146,15 @@ class PlayState extends GameState {
         this.map = this.game.add.group()
         this.stars = this.game.add.group()
         this.holes = this.game.add.group()
+        this.lava = this.game.add.group()
+        this.street = this.game.add.group()
 
-        this.mapTmx.destroyFom
-        this.mapTmx.createFromObjects('mapa1', 3, 'star', 0, true, false, this.stars, Star)
         this.mapTmx.createFromObjects('mapa1', 1, object, 0, true, false, this.map, Block)
         this.mapTmx.createFromObjects('mapa1', 2, 'black', 0, true, false, this.map, Block)
         this.mapTmx.createFromObjects('mapa1', 7, 'hole', 0, true, false, this.holes, Hole)
+        this.mapTmx.createFromObjects('mapa1', 3, 'star', 0, true, false, this.stars, Star)
         this.mapTmx.createFromObjects('mapa1', 8, 'nHole', 0, true, false, this.holes, Hole)
+        this.mapTmx.createFromObjects('mapa1', 9, 'block4', 0, true, false, this.lava, Block)
     }
 
     killStar(ball, star){
@@ -176,10 +186,12 @@ class PlayState extends GameState {
         this.map.killAll()
         this.stars.killAll()
         this.holes.killAll()
+        this.lava.killAll()
 
         this.map = null
         this.stars = null
         this.holes = null
+        this.lava = null
         this.mapTmx = null
     }
 
@@ -193,7 +205,7 @@ class PlayState extends GameState {
     }
 
     rebuild(){
-        this.updaterMusics(this.ball.level)
+        this.updaterMusics()
         var level = this.ball.level
         this.game.points += this.ball.score
         this.killAll()
@@ -220,12 +232,12 @@ class PlayState extends GameState {
             case 4:
                 this.ball.music = this.game.add.audio('music4')
                 this.createMap(this.mapTmx, 'mapD', 'block4', 'back4')
-                this.changeBall('ball4', 80, 80)
+                this.changeBall('ball4', 80, 40)
             break
 
             case 5:
                 this.createMap(this.mapTmx, 'mapD', 'block4', 'back4')
-                this.changeBall('ball4', 80, 80)
+                this.changeBall('ball4', 40, 5)
             break
         }
 
@@ -247,7 +259,6 @@ class PlayState extends GameState {
     }
 
     createMenu(){
-        //this.game.paused = true
         this.ball.body.paused = true
         this.menu = this.game.add.tileSprite(0, 0, 480, 800, 'menu')
         this.pause = this.game.add.tileSprite(0, 0, 40, 40, 'pause')
@@ -263,13 +274,31 @@ class PlayState extends GameState {
         this.pause.id = 'pause'
     }
 
+    canDie(ball, lava){
+
+        var distX = (ball.body.x - lava.body.x)
+        var distY = (ball.body.y - lava.body.y)
+        if(distX < 0)   distX *= (-1)
+        if(distY < 0)   distY *= (-1)
+        
+        if(distX < 20 || distY < 20){
+            console.log('tocou amis uma vez X ' + distX + ' Y ' + distY)
+            ball.visible = false
+            ball.musicHole.play()
+        }
+    }
+
     update() {
         this.movePC()
         this.moveText()
         this.game.physics.arcade.collide(this.ball, this.map)
+        this.game.physics.arcade.overlap(this.ball, this.lava, this.canDie)
         this.game.physics.arcade.collide(this.ball, this.stars, this.killStar)
 
         if(!this.ball.visible){
+            this.ball.body.velocity.x = 0
+            this.ball.body.velocity.y = 0
+
             this.menu.kill()
             this.pause.kill()
             this.rebuild()
@@ -277,6 +306,10 @@ class PlayState extends GameState {
     }
 
     movePC() {
+        if(this.menu.alive){
+            return
+        }
+
         this.click = false
 
         if(this.keys.left.isDown) {
