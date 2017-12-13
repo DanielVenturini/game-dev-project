@@ -296,7 +296,6 @@ class PlayState extends GameState {
         this.pause.input.useHandCursor = true
         this.pause.events.onInputDown.add(this.destroySprite, this)
 
-        console.log('level: ' + this.game.actualLevel)
         if(this.game.actualLevel == 5){
             this.game.text1.text = 'PARABENS!'
             this.game.text2.text = 'PONTOS: ' + (this.game.score/this.game.die)
