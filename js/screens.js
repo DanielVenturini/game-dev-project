@@ -110,6 +110,17 @@ class PlayState extends GameState {
         var z = evnt.alpha
         var x = evnt.gamma
 
+        if(this.ball.body.x < x){   //andou para a direita
+            this.ball.body.angularVelocity += this.angular
+        } else {                    //andou para a esquerda
+            this.ball.body.angularVelocity -= this.angular
+        }
+        if(this.ball.body.y < y){   //andou para baixo
+            this.ball.body.angularVelocity += this.angular
+        } else {                    //andou para cima
+            this.ball.body.angularVelocity -= this.angular
+        }
+
         this.ball.body.velocity.x += x
         this.ball.body.velocity.y += y
     }
